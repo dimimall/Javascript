@@ -36,31 +36,16 @@
         this.diet = diet;
         this.name = name;
     }
-    // Use IIFE to get human data from form
-    //let humanInfo = getHumanData;
-
-    var getHumanData = (function ()
-    {
-        const name = document.getElementById('name').value;
-        const feet = document.getElementById('feet').value;
-        const inches = document.getElementById('inches').value;
-        const weight = document.getElementById('weight').value;
-        const diet = document.getElementById('diet').value;
-        const height = (feet * 12) + inches;
-        const human = new Human("Human",weight,height,diet,name);
-
-        return human;
-    })();
 
     // Create Dino Compare Method 1
     // NOTE: Weight in JSON file is in lbs, height in inches. 
     Dino.prototype.compareHeight = function(human,dino) {
         if (human.height < dino.height)
         {
-            return dino.species;
+            return dino.species+" has more height than "+human.species
         }
         else{
-            return human.species;
+            return human.species+" has more height than "+dino.species
         }
     };
     
@@ -69,10 +54,10 @@
     Dino.prototype.compareWeight = function(human,dino) {
         if (human.weight < dino.weight)
         {
-            return dino.species;
+            return dino.species +" has more weight than "+human.species
         }
         else{
-            return human.species;
+            return human.species+" has more weight than "+dino.species
         }
     };
     
@@ -81,22 +66,21 @@
     Dino.prototype.compareDiet = function(human,dino) {
         if (human.diet < dino.diet)
         {
-            return dino.species;
+            return dino.species+" has "+dino.diet
         }
         else{
-            return human.species;
+            return human.species+" has "+human.diet
         }
     };
 
     function getRandomFact(human,dino){
         const dinosFact = []
+        dinosFact.push(dino.fact)
+        dinosFact.push(dino.compareHeight(human,dino))
+        dinosFact.push(dino.compareWeight(human,dino))
+        dinosFact.push(dino.compareDiet(human,dino))
 
-        dinosFact.push(dino.fact);
-        dinosFact.push(dino.compareHeight(human,dino));
-        dinosFact.push(dino.compareWeight(human,dino));
-        dinosFact.push(dino.compareDiet(human,dino));
-
-        return dinosFact[Math.floor(Math.random() * 4)];
+        return dinosFact[Math.floor(Math.random()*Math.floor(4))];
     }
     
 
@@ -104,8 +88,19 @@
     async function createTiles(){
         let dinosArray = await getDinosData();
 
-        let humanInfo = getHumanData;
-        console.log(humanInfo);
+        let humanInfo = function ()
+        {
+            const name = document.getElementById('name').value;
+            const feet = parseFloat(document.getElementById('feet').value);
+            const inches = parseFloat(document.getElementById('inches').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const diet = document.getElementById('diet').value;
+            const height = (feet * 12) + inches;
+            const human = new Human("Human",weight,height,diet,name);
+    
+            return human;
+        };
+        console.log(humanInfo());
 
         let tiles = [];
         for(let i=0; i<9; i++){
@@ -119,7 +114,7 @@
 
 
             if(i == 4){
-                innerH3.innerHTML = humanInfo.species;
+                innerH3.innerHTML = humanInfo().species;
                 innerP.innerHTML = "";
                 innerImg.src = "images/human.png";
             }
@@ -130,7 +125,7 @@
             }
             else{
                 innerH3.innerHTML = dinosArray[i].species;
-                innerH3.innerHTML = getRandomFact(humanInfo,dinosArray[i]);
+                innerP.innerHTML = getRandomFact(humanInfo(),dinosArray[i]);
                 innerImg.src = dinosArray[i].image;
             }
             gridHtml.appendChild(innerH3);
@@ -165,6 +160,11 @@
 
     // On button click, restart the process
     document.getElementById("restart").addEventListener("click",function(){
+        document.getElementById('name').value = "";
+        document.getElementById('feet').value = "";
+        document.getElementById('inches').value = "";
+        document.getElementById('weight').value = "";
+
         document.getElementById("grid").style.display = "none";
         document.getElementById("dino-compare").style.display = "block";
     });
