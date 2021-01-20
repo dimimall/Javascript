@@ -133,7 +133,7 @@ function createTiles() {
         const grid = document.getElementById("grid");
         const dinosArray = await getDinosData();
 
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < dinosArray.length; i++) {
             if (i === 4) {
                 const name = humanInfo().species;
                 const image = "images/human.png";
